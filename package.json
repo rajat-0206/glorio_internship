@@ -1,0 +1,28 @@
+{
+  "name": "glorio",
+  "version": "1.0.0",
+  "description": "This is the internship task for glorio",
+  "main": "index.js",
+  "scripts": {
+    "test": "nodemon start"
+  },
+  "keywords": [
+    "react",
+    "node",
+    "express",
+    "ant",
+    "design",
+    "mongo",
+    "mongoose"
+  ],
+  "author": "Rajat Shrivastava",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "joi": "^17.4.0",
+    "jsonwebtoken": "^8.5.1",
+    "mongodb": "^3.6.9"
+  }
+}
