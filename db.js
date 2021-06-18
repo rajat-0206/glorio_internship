@@ -14,5 +14,10 @@ module.exports = {
         return callback(err,process.env.DBNAME);
       }
     ),
+  /**
+   * 
+   * @returns  { import("mongodb").Collection}
+   */
   Users: () => dbobj.collection("users"),
+  Email_validation: ()=>dbobj.collection("verification"),
 };
