@@ -65,7 +65,7 @@ const SignupForm = () => {
                     },
                 ]}
             >
-                <Input />
+                <Input type="email" placeholder="Email" />
             </Form.Item>
 
             <Form.Item
@@ -79,7 +79,7 @@ const SignupForm = () => {
                 ]}
                 hasFeedback
             >
-                <Input.Password />
+                <Input.Password placeholder="Password" />
             </Form.Item>
 
             <Form.Item
@@ -103,7 +103,7 @@ const SignupForm = () => {
                     }),
                 ]}
             >
-                <Input.Password />
+                <Input.Password placeholder="Confirm Password" />
             </Form.Item>
 
             <Form.Item
@@ -118,7 +118,7 @@ const SignupForm = () => {
                     },
                 ]}
             >
-                <Input />
+                <Input type="text" placeholder="Name"/>
             </Form.Item>
 
 

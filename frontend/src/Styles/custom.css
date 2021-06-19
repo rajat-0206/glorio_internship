@@ -18,7 +18,7 @@
 }
 
 body {
-    background: url('https://images.pexels.com/photos/1229861/pexels-photo-1229861.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500');
+    background: url('https://images.pexels.com/photos/1229861/pexels-photo-1229861.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=3200');
     background-size: cover,contain;
     background-position: center;
 }
@@ -30,4 +30,17 @@ body {
     letter-spacing:3px;
     user-select: none;
     font-family: 'Baloo Tammudu 2', cursive;
+}
+
+.error {
+    color:red;
+    font-size: 20px;
+    margin:0px auto;
+    margin-top:10px;
+}
+
+
+@media screen and (max-width:991px) {
+    .container{
+        width:100%;    }
 }

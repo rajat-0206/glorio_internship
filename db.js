@@ -19,5 +19,7 @@ module.exports = {
    * @returns  { import("mongodb").Collection}
    */
   Users: () => dbobj.collection("users"),
-  Email_validation: ()=>dbobj.collection("verification"),
+  Buildings: () => dbobj.collection("buildings"),
+  History: ()=> dbobj.collection("parkingHistory"),
+
 };
