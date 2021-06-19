@@ -42,6 +42,7 @@ const SignupForm = () => {
     };
 
     return (
+        <div className="coverBody">
         <div className="container">
         <h3 className="heading">Register</h3>
         <Form
@@ -145,6 +146,7 @@ const SignupForm = () => {
         <label>Aleadry have an account </label><br/> <Link to="/">Login</Link>
             </Form.Item>
         </Form>
+        </div>
         </div>
     );
 };

@@ -31,6 +31,7 @@ const LoginForm = () => {
   };
 
   return (
+    <div className="coverBody">
       <div className="container">
           <h3 className="heading">Login</h3>
 
@@ -78,6 +79,7 @@ const LoginForm = () => {
       <label>Or</label><br/> <Link to="/signup">register now!</Link>
       </Form.Item>
     </Form>
+    </div>
     </div>
   );
 };

@@ -44,8 +44,9 @@ const App = () => {
 
           <Switch>
           <Route exact path="/" component={LoginForm} />
-          <Route path="/dashbaord" component={Dashboard} />
+          <Route path="/dashboard" component={Dashboard} />
             <Route path="/signup" component={SignupForm} />
+            <Route path="/history" component={Dashboard} />
            
           </Switch>
         </div>

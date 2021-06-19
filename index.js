@@ -227,7 +227,7 @@ connectToDB((err, dbname) => {
             }
         }
         else {
-            result.json({ "response": "User authentication failed" });
+            res.json({ "response": "User authentication failed" });
         }
     })
 
