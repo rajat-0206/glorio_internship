@@ -1,26 +1,35 @@
 import { React, useState, useContext } from "react";
-import { Layout, Menu, Breadcrumb, Button, Tooltip, Typography, Statistic, Col, Divider, Modal, Form, Input } from 'antd';
-import { BrowserRouter as Router, Redirect, Route, Switch, Link } from "react-router-dom";
+import { Layout, Menu, Spin, Button, Tooltip, Typography, Statistic, Col, Divider, Modal, Form, Input,notification } from 'antd';
+import { useHistory } from "react-router-dom";
 import HistoryPage from "./HistoryPage";
 import HomePage from "./HomePage";
 import { HomeOutlined, HistoryOutlined, LogoutOutlined, PlusCircleOutlined, UserOutlined } from '@ant-design/icons';
 import axios from "axios";
 import AppContext from './AppContext';
+import openNotification from "./notification";
 const { Header, Content, Footer } = Layout;
 const { Title, Text } = Typography;
 
 
 const Dashboard = () => {
+    let history = useHistory();
     const myContext = useContext(AppContext);
-
+    let [loading,changeLoading] = useState(true);
+    let [Username,setname] = useState(null)
+    let [balance,setbalance] = useState(null)
 
 
     const getData = async () => {
-        let token = localStorage.getItem("token");
+        if(loading){
+            let token = localStorage.getItem("token");
         let data = await axios.get("http://localhost:5000/dashboard", {
             headers: { Authorization: `Bearer ${token}` }
         });
-        console.log(data.data);
+        Username = setname(data.data.user.name);
+        localStorage.setItem("buildings",JSON.stringify(data.data.buildings));
+        balance = setbalance(data.data.user.balance);
+        changeLoading(false);
+    }
     }
 
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -31,7 +40,6 @@ const Dashboard = () => {
     };
 
     const showHome = ()=>{
-        console.log("rajat");
         setIsHomeVisible(true);
     }
 
@@ -40,28 +48,38 @@ const Dashboard = () => {
     }
 
     const handleOk = () => {
-        setIsModalVisible(false);
-        console.log(showHome);
     };
 
     const handleCancel = () => {
         setIsModalVisible(false);
     };
 
-    const onFinish = async (values) => {
-
-        console.log('Received values of form: ', values);
+    const onFinish = async () => {
+        let token = localStorage.getItem("token");
+        let amount = document.getElementById("amount").value;
+        let response = await axios.post('http://localhost:5000/addbalance',{
+            "amount":amount
+        },{headers: { Authorization: `Bearer ${token}` }});
+        if(response.data.code==true){
+            openNotification("Add Amount",`₹ ${amount} has been added to your wallet`)
+            setbalance(Number(balance)+Number(amount));
+        }
+        else{
+           openNotification("Error","Failed to add money. Please try later")
+        }
+        document.getElementById("amount").value = "";
+        setIsModalVisible(false);
 
     }
 
     const logout = () => {
         localStorage.clear("token");
         myContext.setUser(null);
-        Redirect("/");
+        history.push("/")
 
     }
-
-    return (
+    
+    let mainlayout = (
         <Layout>
             <Header className="navbar" style={{ position: 'fixed', zIndex: 1, width: '100%', height: "65px" }}>
                 <span className="companyName">Car Paking System</span>
@@ -81,18 +99,18 @@ const Dashboard = () => {
             <Content className="site-layout mainsec" style={{ padding: '0 50px', marginTop: 64 }}>
                 <div className="site-layout-background navbar" style={{ padding: 24 }}>
                     <Typography style={{ "float": "left" }}>
-                        <Title> <UserOutlined /> Rajat Shrivastava</Title>
+                        <Title> <UserOutlined /> {Username}</Title>
 
                     </Typography>
                     <Col>
-                        <Statistic title="Account Balance" value={"₹ 1100"} precision={2} />
+                        <Statistic title="Account Balance" value={`₹ ${balance}`} precision={2} />
                     </Col>
                 </div>
                 <Divider />
                 {homeVisible? <HomePage  />:<HistoryPage/>}
                
                 
-                <Modal title="Add Balance" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
+                <Modal title="Add Balance" visible={isModalVisible} onOk={onFinish} onCancel={handleCancel}>
                     <Form
                         className="modal-form"
                         initialValues={{
@@ -110,7 +128,7 @@ const Dashboard = () => {
                                 },
                             ]}
                         >
-                            <Input prefix={<UserOutlined className="site-form-item-icon" />} type="Number" min="0" placeholder="Amouunt" />
+                            <Input id="amount" type="Number" min="0" placeholder="Amouunt" />
                         </Form.Item>
                     </Form>
                 </Modal>
@@ -118,6 +136,9 @@ const Dashboard = () => {
             <Footer style={{ textAlign: 'center', height: "40px" }}>©2021 Created by Rajat Shrivastava</Footer>
         </Layout>
     )
+    getData()
+    return  (<div>{loading ?  <Spin size="large" className="displayMiddle" /> : mainlayout}</div>)
+    
 }
 
 export default Dashboard;
