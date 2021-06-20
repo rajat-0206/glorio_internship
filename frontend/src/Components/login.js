@@ -1,5 +1,5 @@
 import React,{useState} from "react";
-import {Link} from "react-router-dom";
+import {Link,useHistory} from "react-router-dom";
 import { Form, Input, Button } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import LoginUser from "../controller/login";
@@ -12,6 +12,7 @@ const LoginForm = () => {
   const myContext = useContext(AppContext);
   console.log(myContext);
    let [error,displayError] = useState(null);
+   let history = useHistory()
 
   const onFinish = async (values) => {
 
@@ -27,6 +28,7 @@ const LoginForm = () => {
     localStorage.setItem("token",data.token);
     let email = jwt.decode(data.token).email;
     myContext.setUser(email);
+    history.push("/dashboard");
   }
   };
 

@@ -1,6 +1,6 @@
 import { React, useState, useContext } from "react";
 import { Layout, Menu, Spin, Button, Tooltip, Typography, Statistic, Col, Divider, Modal, Form, Input } from 'antd';
-import { BrowserRouter as Router, Redirect, Route, Switch, Link } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import HistoryPage from "./HistoryPage";
 import HomePage from "./HomePage";
 import { HomeOutlined, HistoryOutlined, LogoutOutlined, PlusCircleOutlined, UserOutlined } from '@ant-design/icons';
@@ -11,6 +11,7 @@ const { Title, Text } = Typography;
 
 
 const Dashboard = () => {
+    let history = useHistory();
     const myContext = useContext(AppContext);
     let [loading,changeLoading] = useState(true);
     let [Username,setname] = useState(null)
@@ -57,7 +58,9 @@ const Dashboard = () => {
     };
 
     const onFinish = async (values) => {
-
+        // await axios.post('http://localhost:5000/addbalance',{
+        //     "amount":
+        // })
         console.log('Received values of form: ', values);
 
     }
@@ -65,7 +68,7 @@ const Dashboard = () => {
     const logout = () => {
         localStorage.clear("token");
         myContext.setUser(null);
-        Redirect("/");
+        history.push("/")
 
     }
     
