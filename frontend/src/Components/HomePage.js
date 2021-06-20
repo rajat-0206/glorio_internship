@@ -22,21 +22,7 @@ const HomePage = () => {
   let build = () => {
     if (loading) {
       try {
-        buildingData =  JSON.parse(localStorage.getItem("buildings"));
-        main = (
-          <div className="site-card-wrapper">
-            {cards}
-          <Modal title="Slot Status" visible={modalVisible} onOk={handleOk} onCancel={handleCancel}>
-          <Typography >
-            <Text size="large" style={{ "font-size": "24px", "margin": "0px auto" }}>{building} {slot}</Text>
-            <div className="navbar" style={{ "margin-top": "24px" }}>
-              <Text>{modalValue ? "This slot is available to park" : "This slot has a car already parked"}</Text>
-              {modalValue ? <Button type="primary" className="actionBtn" size="small" onClick={() => parkCar(building, slot)} >Park here</Button> : <Button type="danger" className="actionBtn" size="small" onClick={() => unparkCar("objectid")} >Unpark Car</Button>}
-            </div>
-          </Typography>
-        
-        </Modal>
-        </div>)
+        buildingData = JSON.parse(localStorage.getItem("buildings"));
         changeLoading(false);
       } catch (e) {
         console.log(e)
@@ -88,28 +74,41 @@ const HomePage = () => {
     return <div className="buildingCard">{avail}</div>;
   }
 
-  let cards = ()=>{
+  let cards = () => {
+    console.log(buildingData);
     let buildings = [];
-    {
-      buildingData.forEach((ele) => {
-        <Col span={8}>
+    buildingData.forEach((ele) => {
+      <Col span={8}>
         <Card title={ele.name} bordered={false}>
           Total SLot :{ele.total_slots}
           Available Slot:{ele.available_slots}
-          {buildBadge(ele.name, ele.total_slots,ele.filled)}
+          {buildBadge(ele.name, ele.total_slots, ele.filled)}
         </Card>
       </Col>
-      })
-    }
-    return < Row gutter = { 16} >
-        {buildings}
-          </Row >
+    })
+    return (
+      <div className="site-card-wrapper">
+        < Row gutter={16} >
+          {buildings}
+        </Row >
+        {cards}
+        <Modal title="Slot Status" visible={modalVisible} onOk={handleOk} onCancel={handleCancel}>
+          <Typography >
+            <Text size="large" style={{ "font-size": "24px", "margin": "0px auto" }}>{building} {slot}</Text>
+            <div className="navbar" style={{ "margin-top": "24px" }}>
+              <Text>{modalValue ? "This slot is available to park" : "This slot has a car already parked"}</Text>
+              {modalValue ? <Button type="primary" className="actionBtn" size="small" onClick={() => parkCar(building, slot)} >Park here</Button> : <Button type="danger" className="actionBtn" size="small" onClick={() => unparkCar("objectid")} >Unpark Car</Button>}
+            </div>
+          </Typography>
+        </Modal>
+      </div>
+    )
   }
 
 
 
-build()
-return (<div>{loading ? <Spin size="large" className="displayMiddle" /> :main}</div>)
+  build()
+  return (<div>{loading ? <Spin size="large" className="displayMiddle" /> :<cards />}</div>)
 };
 
 export default HomePage;
