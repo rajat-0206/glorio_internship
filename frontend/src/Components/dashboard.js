@@ -92,7 +92,7 @@ const Dashboard = () => {
                 {homeVisible? <HomePage  />:<HistoryPage/>}
                
                 
-                <Modal title="Basic Modal" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
+                <Modal title="Add Balance" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
                     <Form
                         className="modal-form"
                         initialValues={{
