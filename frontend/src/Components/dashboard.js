@@ -1,5 +1,5 @@
 import { React, useState, useContext } from "react";
-import { Layout, Menu, Breadcrumb, Button, Tooltip, Typography, Statistic, Col, Divider, Modal, Form, Input } from 'antd';
+import { Layout, Menu, Spin, Button, Tooltip, Typography, Statistic, Col, Divider, Modal, Form, Input } from 'antd';
 import { BrowserRouter as Router, Redirect, Route, Switch, Link } from "react-router-dom";
 import HistoryPage from "./HistoryPage";
 import HomePage from "./HomePage";
@@ -12,15 +12,23 @@ const { Title, Text } = Typography;
 
 const Dashboard = () => {
     const myContext = useContext(AppContext);
-
+    let [loading,changeLoading] = useState(true);
+    let [Username,setname] = useState(null)
+    let [balance,setbalance] = useState(null)
 
 
     const getData = async () => {
+        if(loading){
         let token = localStorage.getItem("token");
         let data = await axios.get("http://localhost:5000/dashboard", {
             headers: { Authorization: `Bearer ${token}` }
         });
-        console.log(data.data);
+        console.log(data.data)
+        Username = setname(data.data.user.name);
+        localStorage.setItem("buildings",JSON.stringify(data.data.buildings));
+        balance = setbalance(data.data.user.balance);
+        changeLoading(false);
+    }
     }
 
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -60,8 +68,8 @@ const Dashboard = () => {
         Redirect("/");
 
     }
-
-    return (
+    
+    let mainlayout = (
         <Layout>
             <Header className="navbar" style={{ position: 'fixed', zIndex: 1, width: '100%', height: "65px" }}>
                 <span className="companyName">Car Paking System</span>
@@ -81,11 +89,11 @@ const Dashboard = () => {
             <Content className="site-layout mainsec" style={{ padding: '0 50px', marginTop: 64 }}>
                 <div className="site-layout-background navbar" style={{ padding: 24 }}>
                     <Typography style={{ "float": "left" }}>
-                        <Title> <UserOutlined /> Rajat Shrivastava</Title>
+                        <Title> <UserOutlined /> {Username}</Title>
 
                     </Typography>
                     <Col>
-                        <Statistic title="Account Balance" value={"₹ 1100"} precision={2} />
+                        <Statistic title="Account Balance" value={`₹ ${balance}`} precision={2} />
                     </Col>
                 </div>
                 <Divider />
@@ -118,6 +126,9 @@ const Dashboard = () => {
             <Footer style={{ textAlign: 'center', height: "40px" }}>©2021 Created by Rajat Shrivastava</Footer>
         </Layout>
     )
+    getData()
+    return  (<div>{loading ?  <Spin size="large" className="displayMiddle" /> : mainlayout}</div>)
+    
 }
 
 export default Dashboard;

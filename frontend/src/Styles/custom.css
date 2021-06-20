@@ -93,7 +93,12 @@
     background-color: #333;
 }
 
-
+.displayMiddle {
+    position:absolute !important;
+    top:50%;
+    left:50%;
+    transform: translate(-50%,-50%);
+}
 
 
 @media screen and (max-width:991px) {
