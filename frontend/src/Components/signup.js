@@ -1,6 +1,9 @@
-import { Link } from "react-router-dom";
-import React from 'react';
+import { Link,useHistory} from "react-router-dom";
+import {useState,useContext} from 'react';
 import { Form, Input, Checkbox, Button} from 'antd';
+import createUser from "../controller/signup";
+import openNotification from "./notification";
+import AppContext from './AppContext'
 
 
 const formItemLayout = {
@@ -36,15 +39,34 @@ const tailFormItemLayout = {
 
 const SignupForm = () => {
     const [form] = Form.useForm();
+    const myContext = useContext(AppContext);
+   let [error,displayError] = useState(null);
+   let history = useHistory()
+  if(myContext.user!=null){
+    history.push("/dashboard");
+  }
+    const onFinish = async (values) => {
 
-    const onFinish = (values) => {
-        console.log('Received values of form: ', values);
+    let data = await createUser(values);
+    if(data.code===false){
+      error = data.response;
+      displayError(error);
+  }
+  else{
+    displayError(" ");
+    openNotification("Register",data.response)
+    setTimeout(() => {
+    history.push("/");
+        
+    }, 1000);
+  }
     };
 
     return (
         <div className="coverBody">
         <div className="container">
         <h3 className="heading">Register</h3>
+        <span className="error">{error===null?" ":error}</span>
         <Form
             {...formItemLayout}
             form={form}

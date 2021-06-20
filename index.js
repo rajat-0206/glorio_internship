@@ -1,3 +1,5 @@
+
+
 require("dotenv").config();
 const express = require("express"),
     cors = require("cors"),
@@ -17,14 +19,29 @@ const verifyPass = async (userpass, storedpass) => {
     return await bcrypt.compare(userpass, storedpass);
 }
 
+const hasElement = (arr,ele) =>{
+    let flag = 0;
+    arr.forEach(element => {
+        if(element.slot===ele){
+            flag = 1;
+        }
+    });
+    if(flag===1){
+        return true;
+    }
+    else{
+        return false;
+    }
+    
+}
+
 app.use(cors());
 app.use(express.urlencoded({
     extended: true
 }));
 app.use(express.json());
 connectToDB((err, dbname) => {
-    if (err) return console.log(err);
-    console.log(`Connected to ${dbname}`)
+    if (err) return ;
 
     app.get("/", (req, res) => {
         return res.send("Yayyy your are successfully connected to the project. Please visit <a href='https://github.com/rajat-0206/glorio_internship'>here</a> to find api documentation");
@@ -52,11 +69,10 @@ connectToDB((err, dbname) => {
             if (res.insertedCount == 1) {
 
                 Mailer(res.ops[0].email, "Verify your Email", `Click on the following link to verify your email<br><a href=${process.env.SITE}/verify/${res.ops[0]._id}>${process.env.SITE}/verify/${res.ops[0]._id}</a>`, () => {
-                    console.log(`Mail has been sent on ${res.ops[0].email}`);
                 });
 
             }
-            return res.insertedCount == 1 ? result.json({ "id": res.ops[0]._id, "message": "Activation email has been sent to your email id", "code": true }) : result.json({ "response": "Some unknown error occured", "code": false });
+            return res.insertedCount == 1 ? result.json({ "id": res.ops[0]._id, "response": "Activation email has been sent to your email id", "code": true }) : result.json({ "response": "Some unknown error occured", "code": false });
         }
         else {
             return result.json({ "response": data, "code": false });
@@ -90,7 +106,7 @@ connectToDB((err, dbname) => {
             let data = await Users().findOne({ email });
             if (!data.is_validated) {
                 Mailer(data.email, "Verify your Email", `Click on the following link to verify your email<br><a href=${process.env.SITE}/verify/${data._id}>${process.env.SITE}/verify/${data._id}</a>`);
-                return result.json({ "response": "Please verify your email to login. Verification link has been sent to your mail id" });
+                return result.json({ "response": "Please verify your email to login. Verification link has been sent to your mail id","code":false});
             }
             chkcred = await verifyPass(password, data.password);
             if (chkcred) {
@@ -98,11 +114,11 @@ connectToDB((err, dbname) => {
                 return result.json({ "id": data._id, "token": token, "code": true });
             }
             else {
-                result.json({ "response": "Login failed. Please check you credentials", "code": false })
+                return result.json({ "response": "Login failed. Please check you credentials", "code": false })
             }
         }
         else {
-            result.json({ "response": "No such user found", "code": false });
+            return result.json({ "response": "No such user found", "code": false });
         }
     });
 
@@ -141,13 +157,12 @@ connectToDB((err, dbname) => {
             let amount = req.body.amount;
             let user = await Users().findOne({ email: chkUser.email });
             let newamount = Number(user.balance) + Number(amount);
-            console.log(user);
             let addAmount = await Users().findOneAndUpdate({ email: chkUser.email }, { $set: { balance: newamount } });
 
             return res.json({ "new_balance": `${newamount}`, "code": true });
         }
         else {
-            result.json({ "response": "User authentication failed" });
+            return res.json({ "response": "User authentication failed" });
         }
     });
 
@@ -168,21 +183,17 @@ connectToDB((err, dbname) => {
             bObj = await Buildings().findOne({ "name": building });
             if (bObj) {
                 if (Number(slot) < 0 || Number(slot) > bObj.total_slots) {
-                    res.json({ "response": "The building do not have the given slot number", "code": false });
+                    return res.json({ "response": "The building do not have the given slot number", "code": false });
                 }
                 else {
                     filled = bObj.filled;
                     if (!filled) {
                         filled = Array();
                     }
-                    if (filled.includes(slot)) {
-                        res.json({ "response": "This slot is already filled", code: false })
+                    if (hasElement(filled,slot)) {
+                        return res.json({ "response": "This slot is already filled", code: false })
                     }
                     else {
-                        console.log(bObj);
-                        filled.push(slot);
-                        let newvalues = { "available_slots": Number(bObj.available_slots) - 1, "filled": filled }
-                        let updateSlot = Buildings().findOneAndUpdate({ name: bObj.name }, { $set: newvalues });
                         let addHistory = await History().insertOne({
                             "user": chkUser.email,
                             "parking_time": Date(),
@@ -190,19 +201,21 @@ connectToDB((err, dbname) => {
                             "slot": `${building} slot ${slot}`,
                             "unpark_time": "NA"
                         });
-
+                        filled.push({"slot":slot,"id":addHistory.ops[0]._id,"user":chkUser.email});
+                            let newvalues = { "available_slots": Number(bObj.available_slots) - 1, "filled": filled }
+                            let updateSlot = Buildings().findOneAndUpdate({ name: bObj.name }, { $set: newvalues });
                         return addHistory.insertedCount == 1 ? res.json({ "response": "car parked successfull", "code": true }) : res.json({ "response": "Some error occured", "code": false });
                     }
                 }
             }
             else {
-                res.json({ "response": "Invalid building code", "code": false });
+                return res.json({ "response": "Invalid building code", "code": false });
             }
 
 
         }
         else {
-            result.json({ "response": "User authentication failed" });
+            return res.json({ "response": "User authentication failed" });
         }
     });
 
@@ -227,7 +240,7 @@ connectToDB((err, dbname) => {
             }
         }
         else {
-            res.json({ "response": "User authentication failed" });
+            return res.json({ "response": "User authentication failed" });
         }
     })
 
@@ -246,7 +259,7 @@ connectToDB((err, dbname) => {
             history = await History().findOne({"_id":ObjectId(req.body.bookingid)});
             }
             catch(e){
-                res.json({ "response": "Invalid booking id", "code": false });
+                return res.json({ "response": "Invalid booking id", "code": false });
             }
             if (history && history.unpark_time==="NA") {
             let parked_time = new Date(history.parking_time);
@@ -254,21 +267,24 @@ connectToDB((err, dbname) => {
             let diffTime = Math.abs(current_time - parked_time)
             let diff_hour = Math.ceil(diffTime / (1000 * 60 * 60 ));
             let charges = 0;
-            console.log(diff_hour);
             charges = 100 + (diff_hour - 1) * 60;
+            let user = await Users().findOne({"email":chkUser.email});
+            let newbalance = user.balance - charges;
+            if(newbalance<0){
+                return res.json({ "response": "Insufficient balance. Add money to wallet to unpark", "code": false });
+            }
+            let update = {"balance":user.balance - charges};
+            let updateUser = await Users().findOneAndUpdate({"email":chkUser.email},{$set:update})
             let updated = {"charges":charges,"unpark_time":Date()}
             let updateHistory = await History().findOneAndUpdate({"_id":ObjectId(req.body.bookingid)},{$set:updated});
             let temp = history.slot.split(" ");
             let bObj = await Buildings().findOne({"name":`Building ${temp[1]}`});
             let filled = bObj.filled;
             filled = filled.filter((item) =>{
-                return item !== Number(temp[3])
+                return String(item.id) !== String(req.body.bookingid)
             })
-            let update = {"available_slots":bObj.available_slots+1,filled:filled}
+            update = {"available_slots":bObj.available_slots+1,filled:filled}
             let updateBuilding = await Buildings().findOneAndUpdate({"name":`Building ${temp[1]}`},{$set:update})
-            let user = await Users().findOne({"email":chkUser.email});
-            update = {"balance":user.balance - charges};
-            let updateUser = await Users().findOneAndUpdate({"email":chkUser.email},{$set:update})
             return res.json({"response":"car unparked successfully","code":true})
         
             }
@@ -277,7 +293,7 @@ connectToDB((err, dbname) => {
             }
         }
         else {
-            result.json({ "response": "User authentication failed" });
+            return res.json({ "response": "User authentication failed" });
         }
     })
 

@@ -16,8 +16,7 @@ class User {
   }
 
   validateName(name) {
-    const re = /^[a-zA-Z]+ [a-zA-Z]+$/;
-    return re.test(String(name).toLowerCase());
+    return /^[A-Za-z ]+$/.test(name);
   }
 
   async userExist(email) {
