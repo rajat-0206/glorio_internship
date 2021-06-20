@@ -11,7 +11,7 @@ const HistoryPage = () => {
       let data = "";
       if(!columns){
         let token = localStorage.getItem("token");
-     data = await axios.get("http://localhost:5000/history",{
+     data = await axios.get("https://gloiriobackend.herokuapp.com/history",{
         headers: { Authorization: `Bearer ${token}` }
     });
     let tempColumn =data.data.response ;

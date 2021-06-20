@@ -22,7 +22,7 @@ const Dashboard = () => {
     const getData = async () => {
         if(loading){
             let token = localStorage.getItem("token");
-        let data = await axios.get("http://localhost:5000/dashboard", {
+        let data = await axios.get("https://gloiriobackend.herokuapp.com/dashboard", {
             headers: { Authorization: `Bearer ${token}` }
         });
         Username = setname(data.data.user.name);
@@ -57,7 +57,7 @@ const Dashboard = () => {
     const onFinish = async () => {
         let token = localStorage.getItem("token");
         let amount = document.getElementById("amount").value;
-        let response = await axios.post('http://localhost:5000/addbalance',{
+        let response = await axios.post('https://gloiriobackend.herokuapp.com/addbalance',{
             "amount":amount
         },{headers: { Authorization: `Bearer ${token}` }});
         if(response.data.code==true){

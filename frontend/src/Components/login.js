@@ -19,6 +19,7 @@ const LoginForm = () => {
 
    
     let data = await LoginUser(values);
+    console.log(data);
     if(data.code===false){
       error = data.response;
       displayError(error);

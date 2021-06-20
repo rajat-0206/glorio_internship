@@ -54,7 +54,7 @@ const HomePage = () => {
 
   const parkCar = async(name, slotno) => {
     let token = localStorage.getItem("token")
-    let response = await axios.post("http://localhost:5000/parkcar", {
+    let response = await axios.post("https://gloiriobackend.herokuapp.com/parkcar", {
       "building": name,
       "slot": slotno,
     },{headers: { Authorization: `Bearer ${token}` }});
@@ -62,7 +62,7 @@ const HomePage = () => {
 
     if(response.data.code==true){
       openNotification("Park",response.data.response)
-      let data = await axios.get("http://localhost:5000/dashboard",{headers: { Authorization: `Bearer ${token}` }});
+      let data = await axios.get("https://gloiriobackend.herokuapp.com/dashboard",{headers: { Authorization: `Bearer ${token}` }});
       data = data.data.buildings;
       localStorage.removeItem("buildings");
       localStorage.setItem("buildings",JSON.stringify(data));
@@ -94,13 +94,13 @@ const HomePage = () => {
       openNotification("Park","This car is not yours so you cannot unpark this car");
       return ;
     }
-    let response = await axios.post("http://localhost:5000/unparkcar", {
+    let response = await axios.post("https://gloiriobackend.herokuapp.com/unparkcar", {
       "bookingid": ObjectId,
     },{headers: { Authorization: `Bearer ${token}` }});
 
     if(response.data.code==true){
       openNotification("Park",response.data.response)
-      let data = await axios.get("http://localhost:5000/dashboard",{headers: { Authorization: `Bearer ${token}` }});
+      let data = await axios.get("https://gloiriobackend.herokuapp.com/dashboard",{headers: { Authorization: `Bearer ${token}` }});
       data = data.data.buildings;
       localStorage.removeItem("buildings");
       localStorage.setItem("buildings",JSON.stringify(data));
