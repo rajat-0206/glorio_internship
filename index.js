@@ -297,19 +297,20 @@ connectToDB((err, dbname) => {
         }
     })
 
-
-
-});
-
-
-
-const server_port = process.env.PORT || 5000,
+    const server_port = process.env.PORT || 5000 || 80,
     server_host = "0.0.0.0" || "localhost";
 
 
 app.listen(server_port, server_host, () => {
     console.log(`Server on ${server_host}:${server_port}`)
 })
+
+
+
+});
+
+
+
 
 
 
